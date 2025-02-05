@@ -1,11 +1,5 @@
 
 const cors = require('cors');
-app.use(cors({
-  origin: 'https://amana-front.bellidev.com', // Accepter uniquement ton frontend
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization'
-}));
-
 const express = require('express');
 const swaggerConfig = require('./config/swaggerConfig');  // Importation de la config Swagger
 
@@ -18,6 +12,11 @@ const cityRoutes = require('./routes/cityRoutes'); // Importer les routes pour l
 app.use(express.json());
 swaggerConfig(app);
 
+app.use(cors({
+  origin: 'https://amana-front.bellidev.com', // Accepter uniquement ton frontend
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type, Authorization'
+}));
 
 // Routes API
 app.use('/api/users', userRoutes);
