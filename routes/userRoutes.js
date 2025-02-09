@@ -45,7 +45,7 @@ const userController = require('../controllers/userController');
  *       500:
  *         description: Erreur interne du serveur
  */
-router.post('/register', userController.createUser);
+router.post('/register', upload.single('profilePicture'), userController.createUser);
 
 /**
  * @swagger

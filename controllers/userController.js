@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken');
 
 // Fonction pour créer un utilisateur et le connecter immédiatement
 const createUser = async (req, res) => {
-  const { email, password, firstName, lastName, phone, profilePhoto, role } = req.body;
+  const { email, password, firstName, lastName, phone, role } = req.body;
+  let profilePhoto = req.file ? `/uploads/${req.file.filename}` : null; // Récupère le chemin de la photo
 
   try {
     // Vérifier si l'email existe déjà
