@@ -1,6 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
+const upload = require('../middlewares/upload'); // Import du middleware Multer
 const userController = require('../controllers/userController');
 
 // Définir l'endpoint POST pour créer un utilisateur

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cityController = require('../controllers/cityController');
-const { authorizeAdmin, authorizeTransporteurOrAdmin,authorizeClientOrTransporteur } = require('../middleware/auth');
+const { authorizeAdmin, authorizeTransporteurOrAdmin,authorizeClientOrTransporteur } = require('../middlewares/auth');
 
 /**
  * @swagger
