@@ -6,7 +6,7 @@ const userController = require('../controllers/userController');
 // Définir l'endpoint POST pour créer un utilisateur
 /**
  * @swagger
- * /api/users:
+ * /api/users/register:
  *   post:
  *     summary: Créer un utilisateur
  *     tags:
@@ -45,7 +45,7 @@ const userController = require('../controllers/userController');
  *       500:
  *         description: Erreur interne du serveur
  */
-router.post('/', userController.createUser);
+router.post('/register', userController.createUser);
 
 /**
  * @swagger
