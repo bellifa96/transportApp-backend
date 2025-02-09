@@ -16,13 +16,10 @@ const createUser = async (req, res) => {
       return res.status(400).json({ message: 'User with this email already exists' });
     }
 
-    // Hachage du mot de passe avant la sauvegarde
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // Création du nouvel utilisateur
     const newUser = await User.create({
       email,
-      password: hashedPassword, // Stocker le mot de passe haché
+      password,
       firstName,
       lastName,
       phone,
@@ -67,14 +64,17 @@ const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid email' });
     }
 
+    console.log(user,password)
     // Comparer le mot de passe fourni avec le mot de passe haché stocké
     const isMatch = await bcrypt.compare(password, user.password);
+
+    console.log(isMatch)
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
 
-    console.log( process.env.JWT_SECRET)    // Génération du token JWT
+    console.log( process.env.JWT_SECRET )    // Génération du token JWT
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, {
       expiresIn: '1h', // Le token expirera dans 1 heure
     });
@@ -97,8 +97,48 @@ const login = async (req, res) => {
 };
 
 
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { firstName, lastName, phone } = req.body;
+    let profilePicture = req.file ? `/uploads/${req.file.filename}` : undefined;
+
+    // Vérifier si l'utilisateur existe
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Mettre à jour les informations
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phone = phone || user.phone;
+    if (profilePicture) user.profilePicture = profilePicture;
+
+    await user.save();
+
+    res.json({
+      message: 'Profil mis à jour avec succès',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role:user.role,
+        phone: user.phone,
+        profilePicture: user.profilePicture,
+      }
+    });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du profil :', error);
+    res.status(500).json({ message: 'Erreur serveur', error });
+  }
+};
+
+
 module.exports = {
   login,
-  createUser
+  createUser,
+  updateProfile
 };
 

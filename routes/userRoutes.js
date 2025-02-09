@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/upload'); // Import du middleware Multer
 const userController = require('../controllers/userController');
+const {authorizeClientOrTransporteur}   = require('../middlewares/auth');
 
 // Définir l'endpoint POST pour créer un utilisateur
 /**
@@ -86,4 +87,43 @@ router.post('/register', upload.single('profilePicture'), userController.createU
  *         description: Unauthorized - Incorrect credentials
  */
 router.post('/login', userController.login);
+
+/**
+ * @swagger
+ * /api/users/profile:
+ *   put:
+ *     summary: Met à jour le profil de l'utilisateur connecté
+ *     tags:
+ *       - Users
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: "John"
+ *               lastName:
+ *                 type: string
+ *                 example: "Doe"
+ *               phone:
+ *                 type: string
+ *                 example: "+33123456789"
+ *               profilePicture:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Profil mis à jour avec succès
+ *       401:
+ *         description: Non autorisé (JWT manquant ou invalide)
+ *       500:
+ *         description: Erreur serveur
+ */
+router.put('/profile', authorizeClientOrTransporteur , upload.single('profilePicture'), userController.updateProfile);
+
 module.exports = router;
