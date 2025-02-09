@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 // Fonction pour créer un utilisateur et le connecter immédiatement
 const createUser = async (req, res) => {
   const { email, password, firstName, lastName, phone, role } = req.body;
-  let profilePhoto = req.file ? `/uploads/${req.file.filename}` : null; // Récupère le chemin de la photo
+  let profilePicture = req.file ? `/uploads/${req.file.filename}` : null; // Récupère le chemin de la photo
 
   try {
     // Vérifier si l'email existe déjà
@@ -26,7 +26,7 @@ const createUser = async (req, res) => {
       firstName,
       lastName,
       phone,
-      profilePhoto,
+      profilePicture,
       role: role || 'client',
     });
 
@@ -47,7 +47,7 @@ const createUser = async (req, res) => {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         phone: newUser.phone,
-        profilePhoto: newUser.profilePhoto,
+        profilePicture: newUser.profilePicture,
         role: newUser.role,
       },
     });
@@ -88,7 +88,7 @@ const login = async (req, res) => {
         lastName: user.lastName,
         role:user.role,
         phone: user.phone,
-        profilePhoto: user.profilePhoto,
+        profilePicture: user.profilePicture,
       },
     });
   } catch (error) {
