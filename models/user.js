@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
     },
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.JSON,
       allowNull: true,
     },
     profilePicture: {
