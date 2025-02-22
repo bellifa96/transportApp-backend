@@ -1,6 +1,35 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
+
+/**
+ * Vérifie et décode un token JWT.
+ * @param {string} token - Le token JWT à vérifier.
+ * @returns {Promise<{ user: object, error: object }>}
+ */
+const verifyToken = async (token) => {
+  if (!token) {
+    return { error: { status: 401, message: 'Accès refusé, token manquant.' } };
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
+
+    if (!user) {
+      return { error: { status: 404, message: 'Utilisateur non trouvé.' } };
+    }
+
+    return { user };
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return { error: { status: 401, message: 'Token expiré. Veuillez vous reconnecter.' } };
+    }
+
+    return { error: { status: 401, message: 'Token invalide.' } };
+  }
+};
+
 // Middleware pour vérifier si l'utilisateur est admin
 const authorizeAdmin = async (req, res, next) => {
   try {
@@ -9,8 +38,11 @@ const authorizeAdmin = async (req, res, next) => {
       return res.status(403).json({ message: 'Accès refusé, token manquant' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.id);
+    const { user, error } = await verifyToken(token);
+
+    if (error) {
+      return res.status(error.status).json({ message: error.message });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -35,8 +67,11 @@ const authorizeTransporteurOrAdmin = async (req, res, next) => {
       return res.status(403).json({ message: 'Accès refusé, token manquant' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.id);
+    const { user, error } = await verifyToken(token);
+
+    if (error) {
+      return res.status(error.status).json({ message: error.message });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -61,8 +96,11 @@ const authorizeClient = async (req, res, next) => {
       return res.status(403).json({ message: 'Accès refusé, token manquant' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.id);
+    const { user, error } = await verifyToken(token);
+
+    if (error) {
+      return res.status(error.status).json({ message: error.message });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
@@ -87,9 +125,12 @@ const authorizeClientOrTransporteur = async (req, res, next) => {
       return res.status(403).json({ message: 'Accès refusé, token manquant' });
     }
 
-    console.log(token,process.env.JWT_SECRET)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findByPk(decoded.id);
+    const { user, error } = await verifyToken(token);
+    console.log(error)
+
+    if (error) {
+      return res.status(error.status).json({ message: error.message });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'Utilisateur non trouvé' });
